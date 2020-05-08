@@ -15,21 +15,21 @@ router.get('/new', (req, res) => {
 
 //create author
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const author = new Author({
         name:req.body.name
     })
-    author.save((err, newAuthor) => {
-        if  (err) {
-            res.render('author/new', {
-                author: author,
-                errorMessage: 'Error creating Author'
-            })
+    try {
+        const newAuthor = await author.save()
+        res.redirect(`author`)
 
-        } else {
-            res.redirect(`author`)
+    } catch{
+        res.render('authors/new', {
+            author: author,
+            errorMessage: 'Error creating Author'
 
-        }
     })
+}
 })
+    
 module.exports = router
