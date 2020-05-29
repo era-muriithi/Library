@@ -3,8 +3,21 @@ const router = express.Router()
 const Author = require('../modules/author')
 
 //All Authors
-router.get('/', (req, res) =>{
-    res.render('authors/index')
+router.get('/', async (req, res) =>{
+    let searchOptions = {}
+    if(req.query.name != null && req.query.name !=='') {
+        searchOptions.name = new RegExp(req.query.name, 'i')
+    }
+    try{
+        const authors = await Author.find(searchOptions)
+        res.render('authors/index', { 
+            authors: authors,
+            searchOptions: req.query
+        })
+
+    }catch{
+        res.redirect('/')
+    }
 })
 
 //new Author route
@@ -21,7 +34,7 @@ router.post('/', async (req, res) => {
     })
     try {
         const newAuthor = await author.save()
-        res.redirect(`authors`)
+        res.redirect(`author`)
 
     } catch{
         res.render('authors/new', {
